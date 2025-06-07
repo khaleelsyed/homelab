@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shiori
+  namespace: shiori
+  labels:
+    app: shiori
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shiori
+  template:
+    metadata:
+      labels:
+        app: shiori
+    spec:
+      volumes:
+        - name: app
+          persistentVolumeClaim:
+            claimName: shiori-pvc
+        - name: tmp
+          emptyDir:
+            medium: Memory
+      containers:
+        - name: shiori
+          image: ghcr.io/go-shiori/shiori:v1.7.3-25-g6fbaecb
+          command: ["/usr/bin/shiori", "serve"]
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SHIORI_DIR
+              value: /srv/shiori
+          volumeMounts:
+            - mountPath: /srv/shiori
+              name: app
+            - mountPath: /tmp
+              name: tmp
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "1024Mi"
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+        runAsUser: 1001
+        runAsGroup: 1001
+        runAsNonRoot: true

@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: shiori-pv
+spec:
+  storageClassName: ""
+  claimRef:
+    name: shiori-pvc
+    namespace: shiori
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 5Gi
+  csi:
+    driver
+    
+    readOnly: false
