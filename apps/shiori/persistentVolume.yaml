@@ -2,6 +2,7 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: shiori-pv
+  namespace: shiori
 spec:
   storageClassName: ""
   claimRef:
@@ -12,8 +13,14 @@ spec:
   accessModes:
     - ReadWriteOnce
   capacity:
-    storage: 5Gi
-  csi:
-    driver
-    
-    readOnly: false
+    storage: 10Gi
+  local:
+    path: /mnt/disks/ssd1
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - worker
